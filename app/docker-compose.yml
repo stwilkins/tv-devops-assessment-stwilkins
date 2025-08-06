@@ -1,0 +1,18 @@
+# This is the YAML configuration for the Docker image
+
+services:
+  app:
+    build:
+      dockerfile: Dockerfile
+      target: builder # Uses builder stage from Dockerfile in app/
+      context: ./
+    ports:
+      - "3000:3000" # Maps the ports on my host machine with the container
+    environment:
+      - NODE_ENV=production
+    command: npm run dev
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
