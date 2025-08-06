@@ -19,8 +19,8 @@ FROM node:20-alpine AS prod
 WORKDIR /app
 # -- copy over dependencies AND built dist/ from Build stage
 COPY --from=builder /app/package*.json ./
-COPY --from=builder /app/dist/ ./dist/
 # -- Clean install dependencies using Docker images intended for production environments
 RUN npm ci --omit=dev
+COPY --from=builder /app/dist/ ./dist/
 # -- Setup environment and submit job (execute server.js as user node)
 CMD ["node", "dist/server.js"]
