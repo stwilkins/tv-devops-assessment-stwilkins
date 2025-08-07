@@ -22,5 +22,9 @@ COPY --from=builder /app/package*.json ./
 # -- Clean install dependencies using Docker images intended for production environments
 RUN npm ci --omit=dev
 COPY --from=builder /app/dist/ ./dist/
+
+RUN ls -R /app/dist
+
+EXPOSE 3000
 # -- Setup environment and submit job (execute server.js as user node)
 CMD ["node", "dist/server.js"]
