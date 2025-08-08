@@ -1,0 +1,12 @@
+# based off most commonly ignored files for Node.js from online
+node_modules/
+*.log
+logs
+.venv/
+env/
+*.bak
+*.tmp
+*.swp
+.git
+.gitignore
+.vscode
