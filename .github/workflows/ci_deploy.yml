@@ -1,0 +1,24 @@
+# yaml file that is executed upon git pushes to main, which activate the AWS server.
+
+name: DevOps Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3  # pre-built github action
+
+      - name: Setup NodeJs
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+
+      - name: AWS Credentials
+        uses: aws-actions/configure-aws-credentials
