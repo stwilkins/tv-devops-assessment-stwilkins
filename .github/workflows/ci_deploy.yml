@@ -73,9 +73,9 @@ jobs:  # The first job, build-and-test, is responsible making sure the source ca
           context: ./app
           file: ./app/Dockerfile
           push: true
-          tags: ${{ secrets.AWS_ECR_REGISTRY }}/${{ env.ECR_REPO }}:latest
-          cache-from: type=registry,ref=${{ secrets.AWS_ECR_REGISTRY }}/${{ env.ECR_REPO }}:cache
-          cache-to: type=registry,ref=${{ secrets.AWS_ECR_REGISTRY }}/${{ env.ECR_REPO }}:cache,mode=max
+          # tags: ${{ secrets.AWS_ECR_REGISTRY }}/${{ env.ECR_REPO }}:latest
+          # cache-from: type=registry,ref=${{ secrets.AWS_ECR_REGISTRY }}/${{ env.ECR_REPO }}:cache
+          # cache-to: type=registry,ref=${{ secrets.AWS_ECR_REGISTRY }}/${{ env.ECR_REPO }}:cache,mode=max
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
@@ -103,8 +103,8 @@ jobs:  # The first job, build-and-test, is responsible making sure the source ca
 
       - name: Login to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v2
-        with:
-          registry: ${{ secrets.AWS_ECR_REGISTRY }}  # specify the ECR registry in secrets
+        # with:
+        #   registry: ${{ secrets.AWS_ECR_REGISTRY }}  # specify the ECR registry in secrets
 
       - name: Deploy CDKTF
         working-directory: ./iac
