@@ -1,20 +1,23 @@
-// ecr.ts manages Typescript code for the ECR construct
+import { EcrRepository } from '@cdktf/provider-aws/lib/ecr-repository';
+import { Construct } from 'constructs';
 
-// Imports for constructor and CDKTF
-import { Contruct } from 'constructs';
-import { EcrRepository } from '@cdktf/provider-aws/lib/ecr';
-
-// Create a properties section
-interface properties_ecr {
-    repositoryName: string;
+interface ECRProps {
+  repositoryName: string;
 }
-// Create ECR class
-export class ECR extends Construct {
-    constructor(scope: ConstructorParameters, id: string, props: properties_ecr) {
-        super(scope, id);
 
-        new EcrRepository(this, "EcrRepository", {
-            name: props.repositoryName,
-        })
-    })
+export class ECR extends Construct {
+  public readonly repository: EcrRepository;
+
+  constructor(scope: Construct, name: string, props: ECRProps) {
+    super(scope, name);
+
+    this.repository = new EcrRepository(this, 'ecr-repo', {
+      name: props.repositoryName,
+      imageTagMutability: 'MUTABLE',
+      tags: {
+        Name: props.repositoryName,
+        Environment: 'dev'
+      }
+    });
+  }
 }

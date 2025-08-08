@@ -41,6 +41,19 @@ class MyStack extends TerraformStack {
       roleName: 'ecs-execution-role',
     });
 
+    new ECR(this, 'ecr', {
+      repositoryName: CONFIG.ecrRepositoryName
+    });
+
+    new ECS(this, 'ecs', {
+      serviceName: CONFIG.serviceName,
+      environment: CONFIG.environment,
+      containerImage: CONFIG.containerImage,
+      containerPort: CONFIG.containerPort,
+      cpu: CONFIG.cpu,
+      memory: CONFIG.memory
+    });
+
   }
 }
 
