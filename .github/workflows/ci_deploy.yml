@@ -6,9 +6,12 @@ on:
   push:
     branches:
       - main
+  pull_request:
+    branches:
+      - main
 
-jobs:
-  deploy:
+jobs:  # The first job, build-and-test, is responsible making sure the source can actually complete compilation
+  test-build:
     runs-on: ubuntu-latest
 
     steps:
@@ -18,7 +21,97 @@ jobs:
       - name: Setup NodeJs
         uses: actions/setup-node@v3
         with:
-          node-version: 20
+          node-version: 20.0  # specify the Node.js version to 20.0, since later version cause an installation issue with cdktf
 
-      - name: AWS Credentials
-        uses: aws-actions/configure-aws-credentials
+      - name: Install dependencies
+        working-directory: ./app
+        run: npm ci
+
+      - name: Compile TypeScript
+        working-directory: ./app
+        run: |
+          npx tsc --build --clean
+          npx tsc
+
+  build-and-deploy:
+    needs: test-build
+    if: github.ref == 'refs/heads/main'  # only run this job if the push is to the main branch
+    runs-on: ubuntu-latest
+
+    env:
+      EcrRepoDev: ${{ secrets.ECR_REPO_DEV }}
+      EcrRepoProd: ${{ secrets.ECR_REPO_PROD }}
+      TF_DYNAMODB_TABLE: ${{ secrets.TF_DYNAMODB_TABLE }}
+      TF_BUCKET: ${{ secrets.TF_BUCKET }}
+      TF_BACKEND_KEY_PROD: ${{ secrets.TF_BACKEND_KEY_PROD }}
+      TF_BACKEND_KEY_DEV: ${{ secrets.TF_BACKEND_KEY_DEV }}
+
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}  # specify the role to assume
+          role-session-name: GitHubActionsSession  # specify a session name for the role
+          aws-region: us-east-1  # specify the AWS region
+
+      - name: Login to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v3
+        with:
+          registry: ${{ secrets.AWS_ECR_REGISTRY }}  # specify the ECR registry in secrets
+
+      - name: Setup Envineronment Variables and Repository
+        id: setup-env
+        run: |
+          if [[ "${GITHUB_REF}" == "refs/heads/main" ]]; then
+            echo "DEPLOY_ENV=prod" >> $GITHUB_ENV
+            echo "ECR_REPO=${ECR_REPO_PROD}" >> $GITHUB_ENV
+            echo "TF_BACKEND_KEY=${TF_BACKEND_KEY_PROD}" >> $GITHUB_ENV
+          else
+            echo "DEPLOY_ENV=dev" >> $GITHUB_ENV
+            echo "ECR_REPO=${ECR_REPO_DEV}" >> $GITHUB_ENV
+            echo "TF_BACKEND_KEY=${TF_BACKEND_KEY_DEV}" >> $GITHUB_ENV
+          fi
+
+      - name: Build Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./app
+          file: ./app/Dockerfile
+          push: true
+          tags: ${{ secrets.AWS_ECR_REGISTRY }}/${{ env.ECR_REPO }}:latest
+          cache-from: type=registry,ref=${{ secrets.AWS_ECR_REGISTRY }}/${{ env.ECR_REPO }}:cache
+          cache-to: type=registry,ref=${{ secrets.AWS_ECR_REGISTRY }}/${{ env.ECR_REPO }}:cache,mode=max
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.5.7  # specify the Terraform version
+
+      - name: Setup CDKTF environment
+        run: |
+          echo "AWS_REGION=us-east-1" >> $GITHUB_ENV
+
+      - name: Install dependencies and build CDKTF
+        working-directory: ./iac
+        run: |
+          npm ci
+          npm install cdktf-cli
+          npx cdktf get
+          npx cdktf synth
+
+      - name: Deploy CDKTF
+        working-directory: ./iac
+        run: |
+          npx cdktf deploy --auto-approve \
+            --backend-config="bucket=${TF_BUCKET}" \
+            --backend-config="dynamodb_table=${TF_DYNAMODB_TABLE}" \
+            --backend-config="key=${TF_BACKEND_KEY}" \
+            --var="ecr_repo=${ECR_REPO}" \
+            --var="deploy_env=${DEPLOY_ENV}"
