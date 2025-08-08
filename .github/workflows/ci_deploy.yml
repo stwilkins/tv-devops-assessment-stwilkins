@@ -38,13 +38,13 @@ jobs:  # The first job, build-and-test, is responsible making sure the source ca
     if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/') # This job will only run if the push is to the main branch or any branch that starts with 'refs/heads/'
     runs-on: ubuntu-latest
 
-    env:
-      EcrRepoDev: ${{ secrets.ECR_REPO_DEV }}
-      EcrRepoProd: ${{ secrets.ECR_REPO_PROD }}
-      TF_DYNAMODB_TABLE: ${{ secrets.TF_DYNAMODB_TABLE }}
-      TF_BUCKET: ${{ secrets.TF_BUCKET }}
-      TF_BACKEND_KEY_PROD: ${{ secrets.TF_BACKEND_KEY_PROD }}
-      TF_BACKEND_KEY_DEV: ${{ secrets.TF_BACKEND_KEY_DEV }}
+    # env:
+    #   EcrRepoDev: ${{ secrets.ECR_REPO_DEV }}
+    #   EcrRepoProd: ${{ secrets.ECR_REPO_PROD }}
+    #   TF_DYNAMODB_TABLE: ${{ secrets.TF_DYNAMODB_TABLE }}
+    #   TF_BUCKET: ${{ secrets.TF_BUCKET }}
+    #   TF_BACKEND_KEY_PROD: ${{ secrets.TF_BACKEND_KEY_PROD }}
+    #   TF_BACKEND_KEY_DEV: ${{ secrets.TF_BACKEND_KEY_DEV }}
 
 
     steps:
@@ -57,14 +57,14 @@ jobs:  # The first job, build-and-test, is responsible making sure the source ca
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v3
         with:
-          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}  # specify the role to assume
+          # role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}  # specify the role to assume
           role-session-name: GitHubActionsSession  # specify a session name for the role
           aws-region: us-east-1  # specify the AWS region
 
       - name: Login to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v2
-        with:
-          registry: ${{ secrets.AWS_ECR_REGISTRY }}  # specify the ECR registry in secrets
+        # with:
+          # registry: ${{ secrets.AWS_ECR_REGISTRY }}  # specify the ECR registry in secrets
 
       - name: Setup Envineronment Variables and Repository
         id: setup-env
