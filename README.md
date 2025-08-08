@@ -1,1 +1,1 @@
-![Github CI](https://github.com/stwilkins/tv-devops=assessment-stwilkins/actions/workflows/ci_deploy.yml/badge.svg)
+![Github CI](https://github.com/stwilkins/tv-devops=assessment-stwilkins/workflows/ci_deploy.yml/badge.svg)
