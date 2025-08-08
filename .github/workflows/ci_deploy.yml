@@ -35,7 +35,7 @@ jobs:  # The first job, build-and-test, is responsible making sure the source ca
 
   build-and-deploy:
     needs: test-build
-    if: github.ref == 'refs/heads/main'  # only run this job if the push is to the main branch
+    if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/') # This job will only run if the push is to the main branch or any branch that starts with 'refs/heads/'
     runs-on: ubuntu-latest
 
     env:
