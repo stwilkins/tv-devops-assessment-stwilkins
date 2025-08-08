@@ -62,7 +62,7 @@ jobs:  # The first job, build-and-test, is responsible making sure the source ca
           aws-region: us-east-1  # specify the AWS region
 
       - name: Login to Amazon ECR
-        uses: aws-actions/amazon-ecr-login@v3
+        uses: aws-actions/amazon-ecr-login@v2
         with:
           registry: ${{ secrets.AWS_ECR_REGISTRY }}  # specify the ECR registry in secrets
 
