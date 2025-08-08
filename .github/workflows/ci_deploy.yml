@@ -5,7 +5,7 @@ name: DevOps Pipeline
 on:
   push:
     branches:
-      - ** # This will trigger the workflow on any push to any branch. In production, you might want to limit this to main or a specific branch.
+      - '**' # This will trigger the workflow on any push to any branch. In production, you might want to limit this to main or a specific branch.
   pull_request:
     branches:
       - main
