@@ -42,8 +42,9 @@ The pipeline is currently triggered from pushes to any branch for testing. Upon 
 ### Pipeline Status
 The pipeline is successful in the build-test for the source code, but fails to deploy the application to AWS due to an incomplete CDKTF configuration and list of variables/secrets.
 
+See the [README.md](https://github.com/stwilkins/tv-devops-assessment-stwilkins/tree/devops_assessment_dev/iac) from the iac/ directory for more information on the CDKTF configuration.
+
 See the repo's Actions tab for the latest run of the pipeline.
 
 This isn't a road block in the code, merely a limitation of the developer's time and experience with CDKTF. With more time, the missing configuration can be populated and tested.
 
-See the [README.md](https://github.com/stwilkins/tv-devops-assessment-stwilkins/tree/devops_assessment_dev/iac) from the iac/ directory for more information on the CDKTF configuration.

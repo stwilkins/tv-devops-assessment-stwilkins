@@ -9,7 +9,7 @@ export interface NetworkProps {
   availabilityZones: string[];
 }
 
-export class Network extends Construct {
+export class NETWORK extends Construct {
   public readonly vpc: vpc.Vpc;
   public readonly subnet: subnet.Subnet[];
   public readonly ecsSecurityGroup: securityGroup.SecurityGroup;

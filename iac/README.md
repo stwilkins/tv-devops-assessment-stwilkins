@@ -10,6 +10,7 @@ The IAC as it stands is not fully functional due to untested configuration, secr
     - Estanblish list of variables/secrets needed for the CDKTF configuration
     - Populate the variables/secrets in the GitHub repository and AWS Secrets Manager
     - Create an environmental config template for users to edit, NOT hardcode the variables/secrets in the code
+        Either .env or the cdktf.json file
     - Finish typescript constructs for ECS, ECR, IAM, and NETWORK (which covers VPC, Subnets, and Security Groups)
     - Update main.ts to include the constructs and deploy the application
     - Test the CDKTF configuration by running `npx cdktf deploy`
