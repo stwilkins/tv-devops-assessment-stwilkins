@@ -5,7 +5,7 @@ name: DevOps Pipeline
 on:
   push:
     branches:
-      - main
+      - '**' # This will trigger the workflow on any push to any branch. In production, you might want to limit this to main or a specific branch.
   pull_request:
     branches:
       - main
@@ -35,16 +35,16 @@ jobs:  # The first job, build-and-test, is responsible making sure the source ca
 
   build-and-deploy:
     needs: test-build
-    if: github.ref == 'refs/heads/main'  # only run this job if the push is to the main branch
+    if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/') # This job will only run if the push is to the main branch or any branch that starts with 'refs/heads/''
     runs-on: ubuntu-latest
 
-    env:
-      EcrRepoDev: ${{ secrets.ECR_REPO_DEV }}
-      EcrRepoProd: ${{ secrets.ECR_REPO_PROD }}
-      TF_DYNAMODB_TABLE: ${{ secrets.TF_DYNAMODB_TABLE }}
-      TF_BUCKET: ${{ secrets.TF_BUCKET }}
-      TF_BACKEND_KEY_PROD: ${{ secrets.TF_BACKEND_KEY_PROD }}
-      TF_BACKEND_KEY_DEV: ${{ secrets.TF_BACKEND_KEY_DEV }}
+    # env:
+    #   EcrRepoDev: ${{ secrets.ECR_REPO_DEV }}
+    #   EcrRepoProd: ${{ secrets.ECR_REPO_PROD }}
+    #   TF_DYNAMODB_TABLE: ${{ secrets.TF_DYNAMODB_TABLE }}
+    #   TF_BUCKET: ${{ secrets.TF_BUCKET }}
+    #   TF_BACKEND_KEY_PROD: ${{ secrets.TF_BACKEND_KEY_PROD }}
+    #   TF_BACKEND_KEY_DEV: ${{ secrets.TF_BACKEND_KEY_DEV }}
 
 
     steps:
