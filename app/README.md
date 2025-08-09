@@ -1,179 +1,50 @@
-# 🚀 DevOps Assessment – Full Lifecycle Challenge
 
-**Estimated Time:** 4–8 hours
-**Level:** Intermediate
-**Focus Areas:** Dockerization · Infrastructure as Code · CI/CD · AWS
+# Prerequisites
+To run the run the application locally, you will need the following prerequisites:
+- Node.js (version 20.0.0)
+  - <sub>(I suggest the user use version 20.0.0 because I experienced build failure for @cdktf/node-pty-prebuilt-multiarch when working on CDKTF, but it may not matter for you)</sub>
 
----
+- Docker and Docker-Compose
 
-## 🧩 Overview
+# Local Dev Instructions
+To run the application locally, follow these steps:
+```
+> cd app/
+> npm ci
+> npx tsc --build --clean
+> npx tsc
+> npm dist/server.js
+```
 
-You will be working from a pre-built Express.js + TypeScript starter application. Your task is to:
+Once the server is running, you can access the application at `http://localhost:3000`. You can also see the healthcheck by navigating to `http://localhost:3000/health`.
 
-1. Containerize the application and create a local dev environment
-2. Define a production-ready cloud deployment using CDK for Terraform
-3. Automate deployment via GitHub Actions
+# Docker Instructions
 
-You **may deploy to your own AWS account for testing**, but your solution must be **fully portable and documented** so we can deploy it into **our AWS environment**.
+To run the application locally using Docker, follow these steps:
 
----
+```
+> cd app/
+> docker build -t express-app .  # This builds the Docker image
+> docker -p 3000:3000 express-app  # This runs the Docker container
+```
+Once the server is running, you can access the application at `http://localhost:3000`. You can also see the healthcheck by navigating to `http://localhost:3000/health`.
 
-## 🚀 Get Started
+To utilize the docker-compose.yml, run:
+```
+> docker-compose up --build
+```
 
-Fork or clone the starter repository:
+# Github Workflow information
+Github workflows are linked to this project via `.github/workflows/ci_deploy.yml`. This file contains the CI/CD pipeline that builds, tests, and deploys the application to AWS. (Or at least it attempts to.)
 
-🔗 https://github.com/TurboVets/tv-devops-assessment
+The pipeline is currently triggered from pushes to any branch for testing. Upon success of the pipeline testing, the YAML would be configured to only trigger on pushes to the main branch, or on pull requests to the main branch.
 
-This contains the basic Express app you’ll be building on.
+### Pipeline Status
+The pipeline is successful in the build-test for the source code, but fails to deploy the application to AWS due to an incomplete CDKTF configuration and list of variables/secrets.
 
----
+See the [README.md](https://github.com/stwilkins/tv-devops-assessment-stwilkins/tree/devops_assessment_dev/iac) from the iac/ directory for more information on the CDKTF configuration.
 
-## 📦 Deliverables
+See the repo's Actions tab for the latest run of the pipeline.
 
-You must submit **one GitHub repository** with the following folder structure in the root:
+This isn't a road block in the code, merely a limitation of the developer's time and experience with CDKTF. With more time, the missing configuration can be populated and tested.
 
-### 1. `app/`
-
-Contains the application code and:
-
-- `Dockerfile`
-- `docker-compose.yml`
-- GitHub Actions workflows
-- `README.md` with local setup and CI/CD instructions
-
-### 2. `iac/`
-
-Contains the infrastructure code and:
-
-- CDK for Terraform (in TypeScript)
-- Configuration templates
-- `README.md` with deployment instructions for our AWS account
-
----
-
-## 🧪 Requirements
-
-### 🔧 Part 1: Docker Compose (Local Dev)
-
-- Create a production-optimized `Dockerfile` (multi-stage build, minimal layers, small image)
-- Create a `docker-compose.yml` to orchestrate the app
-- Add a `.dockerignore` to reduce build context size
-- App must respond to `http://localhost:3000/health`
-
----
-
-### ☁️ Part 2: AWS Infrastructure with CDKTF
-
-Use **CDK for Terraform (TypeScript)** to define:
-
-- ECR repository
-- ECS service (Fargate or EC2)
-- VPC, subnets, security groups
-- IAM roles (least privilege)
-- (Optional) Load Balancer or API Gateway
-
-#### AWS Guidelines
-
-- You may deploy to your own AWS account for validation
-- **DO NOT hardcode account IDs, regions, or credentials**
-- All infrastructure must be configurable using:
-  - `cdktf.json`
-  - `.env` or config files
-  - Environment variables
-
-#### Documentation Required
-
-- Include **clear instructions** on how to:
-  - Override variables to use **our AWS account**
-  - Deploy and destroy the stack
-- The final deployment must produce a publicly accessible `/health` endpoint
-
----
-
-### 🔁 Part 3: GitHub Actions CI/CD
-
-Set up GitHub Actions to:
-
-- Trigger on push to `main`
-- Build and tag a Docker image
-- Push to ECR
-- Deploy via `cdktf deploy`
-
-#### Workflow Requirements
-
-- Use GitHub Secrets to store:
-  - `AWS_ACCESS_KEY_ID`
-  - `AWS_SECRET_ACCESS_KEY`
-  - Any other required env vars
-- Parameterize everything (ECR URI, region, etc.)
-- Include instructions for configuring secrets
-- Add a CI badge to the `README.md`
-
----
-
-## 🎥 Required: 2–5 Minute Walkthrough Video
-
-Record a screen-share video where you walk through:
-
-- Your Docker and Compose setup
-- CDKTF constructs and structure
-- GitHub Actions workflows
-- How we can configure and deploy it in our AWS account
-- Any challenges or decisions worth noting
-
-You do not need to appear on camera.
-
----
-
-## ✅ Evaluation Criteria
-
-| Area             | Expectation                                                              |
-|------------------|---------------------------------------------------------------------------|
-| **Docker Setup** | Clean, production-ready image; Compose works locally                     |
-| **IaC Quality**  | CDKTF code is modular, portable, and secure                              |
-| **CI/CD Flow**   | GitHub Actions runs cleanly; secrets handled properly                    |
-| **Portability**  | Can be deployed in our AWS account without code changes                  |
-| **Documentation**| Detailed, step-by-step usage and setup instructions                      |
-| **Security**     | No hardcoded secrets or account info; uses IAM and GitHub Secrets        |
-| **Communication**| Clear, concise walkthrough video explaining design and deployment        |
-
----
-
-## 🧠 Bonus Points
-
-- Add Route53 and HTTPS
-- CloudWatch logs and alerts
-- Support multiple environments (dev/staging/prod)
-- Use remote Terraform backend (S3 + DynamoDB)
-
----
-
-## 📥 Submission Instructions
-
-Submit a single GitHub repository containing both `app/` and `iac/`.
-
-Then share:
-
-- ✅ GitHub repo link
-- ✅ Video walkthrough link (Loom, Google Drive, YouTube, etc.)
-- ✅ (Optional) Any extra notes or setup info we should know
-
----
-
-## 🔐 Grant GitHub Access
-
-Please add the following as **Admin Collaborators** to your GitHub repository:
-
-- `ana@turbovets.com`
-- `dean@turbovets.com`
-- `charishma@turbovets.com`
-
-### How to Add Admins
-
-1. Open your repo on GitHub
-2. Go to **Settings → Collaborators and teams**
-3. Click **Invite a collaborator**
-4. Enter the emails above
-5. Set access level to **Admin**
-
-This gives us access to CI history, secrets, and workflow configurations for review.
