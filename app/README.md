@@ -13,7 +13,7 @@ To run the application locally, follow these steps:
 > npm ci
 > npx tsc --build --clean
 > npx tsc
-> npm dist/server.js
+> node dist/server.js
 ```
 
 Once the server is running, you can access the application at `http://localhost:3000`. You can also see the healthcheck by navigating to `http://localhost:3000/health`.
