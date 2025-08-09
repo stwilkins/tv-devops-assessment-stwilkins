@@ -25,7 +25,7 @@ To run the application locally using Docker, follow these steps:
 ```
 > cd app/
 > docker build -t express-app .  # This builds the Docker image
-> docker -p 3000:3000 express-app  # This runs the Docker container
+> docker run -p 3000:3000 express-app  # This runs the Docker container
 ```
 Once the server is running, you can access the application at `http://localhost:3000`. You can also see the healthcheck by navigating to `http://localhost:3000/health`.
 
